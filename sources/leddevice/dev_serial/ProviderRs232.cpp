@@ -348,14 +348,17 @@ QString ProviderRs232::discoverFirst()
 				bool knownESPB = (vendor == 0x303a) ||
 								 (vendor == 0x10c4 && (prodId == 0xea60)) ||
 								 (vendor == 0x1A86 && (prodId == 0x7523 || prodId == 0x55d4));
-				if (round == 4 ||
-					(_espHandshake && round == 0 && knownESPA) ||
-					(_espHandshake && round == 1 && knownESPB) ||
+				if ((round == 0 && 
+						_espHandshake && knownESPA) ||
+					(round == 1 && 
+						_espHandshake && knownESPB) ||
 					(round == 2 &&
-						port.systemLocation().contains("ttyUSB", Qt::CaseInsensitive))
-					(!_espHandshake && round == 3 &&
+						port.systemLocation().contains("ttyUSB", Qt::CaseInsensitive) == true) ||
+					(round == 3 && 
+						!_espHandshake &&
 						port.description().contains("Bluetooth", Qt::CaseInsensitive) == false &&
-						port.systemLocation().contains("ttyAMA0", Qt::CaseInsensitive) == false))
+						port.systemLocation().contains("ttyAMA0", Qt::CaseInsensitive) == false) ||
+					(round == 4))
 				{
 					Info(_log, "Serial port auto-discovery. Found serial port device: %s", QSTRING_CSTR(infoMessage));
 					return port.portName();
