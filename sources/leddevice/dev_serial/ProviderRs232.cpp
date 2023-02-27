@@ -332,7 +332,7 @@ int ProviderRs232::writeBytes(const qint64 size, const uint8_t* data)
 
 QString ProviderRs232::discoverFirst()
 {
-	for (int round = 0; round < 4; round++)
+	for (int round = 0; round < 5; round++)
 		for (auto const& port : QSerialPortInfo::availablePorts())
 		{
 #if (QT_VERSION < QT_VERSION_CHECK(6, 0, 0))
@@ -348,10 +348,12 @@ QString ProviderRs232::discoverFirst()
 				bool knownESPB = (vendor == 0x303a) ||
 								 (vendor == 0x10c4 && (prodId == 0xea60)) ||
 								 (vendor == 0x1A86 && (prodId == 0x7523 || prodId == 0x55d4));
-				if (round == 3 ||
+				if (round == 4 ||
 					(_espHandshake && round == 0 && knownESPA) ||
 					(_espHandshake && round == 1 && knownESPB) ||
-					(!_espHandshake && round == 2 &&
+					(round == 2 &&
+						port.systemLocation().contains("ttyUSB", Qt::CaseInsensitive))
+					(!_espHandshake && round == 3 &&
 						port.description().contains("Bluetooth", Qt::CaseInsensitive) == false &&
 						port.systemLocation().contains("ttyAMA0", Qt::CaseInsensitive) == false))
 				{
